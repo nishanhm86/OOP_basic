@@ -1,9 +1,9 @@
 class BankingSystem:
     def __init__(self, name, currency, pin):
-        self.name = name
-        self.currency = currency
-        self.__balance = 500
-        self.__pin = pin
+        self.name = name            #public attribute
+        self.currency = currency    #public attribute
+        self.__balance = 500        #private attribute (Encapsulation) Also introduce security
+        self.__pin = pin            #private attribute (Encapsulation) Also introduce security
 
     def get_client_info(self):
         print(f"Customer Name is {self.name} and account is maintained in {self.currency}")
