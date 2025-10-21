@@ -42,7 +42,7 @@ class Autopilot:
 
 class Smart_Car(ElectricCar, GPS, Autopilot):
     def display_info(self):
-        print(f"My {self.make} {self.model} car has a capacity of {self.battery_capacity} kWh {self.battery_level}% charged")
+        print(f"My {self.make} {self.model} has a {self.battery_capacity} kWh battery and is {self.battery_level}% charged")
 
 
 my_smart_car = Smart_Car("Tesla", "Model s", 200)
