@@ -16,7 +16,7 @@ class Rectangle(Shapes):
         self.height = height
 
     def area(self):
-        print(f"The area of the rectangle is: {self.width * self.height}")
+        print(f"The area of the rectangle is: {self.width * self.height:.2f}")
 
 #list to store shapes
 shape_list = []
@@ -41,4 +41,3 @@ for i in range(num_shapes):
 print("\nCalculating Area")
 for shape in shape_list:
     shape.area()
-

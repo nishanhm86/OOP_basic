@@ -3,9 +3,11 @@ import os
 class Person:
     def __init__(self, name, age, contact):
         self.name = name
-        self.age = age
+        self.age = int(age)
         self.contact = contact
-        print(f"{self.name} is {self.age} years old, can be contacted on {self.contact}")
+
+    def __str__(self):
+        return f"{self.name} is {self.age} years old, can be contacted on {self.contact}"
 
 
 class Doctor(Person):
@@ -16,13 +18,14 @@ class Doctor(Person):
         self.available = available
 
     def __str__(self):
-        return f"Doctor {self.name} is specialized in {self.specialization} - Schedule: {self.schedule} - Available {self.available}"
+        status = "Available" if self.available else "Not Available"
+        return f"Doctor {self.name} is a specialized {self.specialization} - Schedule: {self.schedule} - {status}"
 
 class Patient(Person):
     def __init__(self, name, age, contact, illness, appointment_number):
         super().__init__(name, age, contact)
         self.illness = illness
-        self.appointment_number = appointment_number
+        self.appointment_number = int(appointment_number)
 
     def __str__(self):
         return f"{self.name} is {self.age} having {self.illness} and will be checked under appointment number {self.appointment_number}"
@@ -57,6 +60,7 @@ class Hospital_System:
         doctor = Doctor(name, age, contact, specialization, schedule)
         self.doctors.append(doctor)
         print("Doctor information saved to file")
+        self.save_data()
 
     def view_doctors(self):
         if not self.doctors:
@@ -64,7 +68,8 @@ class Hospital_System:
             return
         print("Available list of doctors:")
         for doctor in self.doctors:
-            print(doctor, "\n")
+            if doctor.available:
+                print(doctor, "\n")
 
     #Patient Functions
 
@@ -77,6 +82,7 @@ class Hospital_System:
         patient = Patient(name, age, contact, illness, appointment_number)
         self.patients.append(patient)
         print("Patient information saved to file")
+        self.save_data()
 
     def view_patient(self):
         if not self.patients:
@@ -93,11 +99,32 @@ class Hospital_System:
         patient_name = input("Enter patient name")
         doctor_name = input("Enter doctor name")
         date = input("Enter appointment date (YYYY-MM-DD)")
+
+        for app in self.appointments:
+            if app.doctor_name == doctor_name and app.patient_name == patient_name and app.date == date:
+                print (f"Doctor{doctor_name} is already booked on {date}\n")
+                return
+
+        for app in self.appointments:
+            if app.doctor_name == doctor_name and app.date == date:
+                print(f"Doctor{doctor_name} is already booked on {date}\n")
+                return
+
+
         appointment_number = len(self.appointments) + 1
 
         appointment = Appointment(appointment_number, doctor_name, patient_name, date)
         self.appointments.append(appointment)
         print("Appointment information saved to file")
+
+        for doctor in self.doctors:
+            if doctor.name == doctor_name:
+                doctor.available = False
+                break
+
+
+        self.save_data()
+
 
     #Appointment Functions
 
@@ -135,27 +162,31 @@ class Hospital_System:
         if os.path.exists("doctors.txt"):
             with open("doctors.txt", "r") as file:
                 for line in file:
-                    name, age, contact, specialization, schedule, available = line.split(",")
+                    name, age, contact, specialization, schedule, available = line.strip().split(",")
                     self.doctors.append(Doctor(name, age, contact, specialization, schedule, available=="True"))
 
         if os.path.exists("patients.txt"):
             with open("patients.txt", "r") as file:
                 for line in file:
-                    name, age, contact, illness, appointment_number = line.split(",")
+                    name, age, contact, illness, appointment_number = line.strip().split(",")
                     self.patients.append(Patient(name, age, contact, illness, appointment_number))
 
         if os.path.exists("appointments.txt"):
             with open("appointments.txt", "r") as file:
                 for line in file:
-                    appointment_number, doctor_name, patient_name, date = line.split(",")
+                    appointment_number, doctor_name, patient_name, date = line.strip().split(",")
                     self.appointments.append(Appointment(appointment_number, doctor_name, patient_name, date))
 
         print("Information loaded successfully")
 
+    def refresh_doctor_availability(self):
+        for doctor in self.doctors:
+            doctor.available = not any(app.doctor_name == doctor.name for app in self.appointments)
+
 
 hospital_system = Hospital_System()
 hospital_system.load_data()
-
+hospital_system.refresh_doctor_availability()
 
 
 while True:

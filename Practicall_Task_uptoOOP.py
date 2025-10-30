@@ -38,7 +38,7 @@ class Library_System(Library):
             with open("books.txt", "r") as file:
                 for line in file:
                     bookid, title, author, available = line.strip().split(",")
-                    self.books.append(Book(bookid, title, author, available.strip() == "true"))
+                    self.books.append(Book(bookid, title, author, available.strip().lower() == "true"))
         except FileNotFoundError:
             print("Book was not found, please check your file path")
 
@@ -117,6 +117,8 @@ class Library_System(Library):
 
     #------------------------Library System------------------------#
 library_system = Library_System()
+library_system.load_books()
+library_system.load_users()
 
 while True:
     print("=" * 40)
